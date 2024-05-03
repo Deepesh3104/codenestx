@@ -1,15 +1,22 @@
 import express from "express";
-import Connection from "./src/Db/db.js";
-import "dotenv/config";
+import cors from "cors";
+import connectDB from "./src/Db/db.js";
+import dotenv from "dotenv";
+import authRoutes from "./src/routes/auths.route.js";
+import productRoutes from "./src/routes/product.route.js";
+
+dotenv.config();
+
+connectDB();
 
 const app = express();
 
-Connection()
-  .then(() => {
-    app.listen(process.env.PORT, () => {
-      console.log(`Server is running on port ${process.env.PORT}`);
-    });
-  })
-  .catch(() => {
-    console.log("Error in connecting to database");
-  });
+app.use(cors());
+app.use(express.json());
+
+app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+
+const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
